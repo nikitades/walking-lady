@@ -1,22 +1,21 @@
-import React from 'react';
-import { Canvas } from '@react-three/fiber'
-import Box from './Box';
+import { useAnimations, useGLTF } from '@react-three/drei';
+import React, { Suspense, useEffect, useRef } from 'react';
+import { Object3D, Vector3 } from 'three';
 
 interface ModelProps {
     modelSrc: string;
+    isTyanWalking: boolean;
 }
 
-const Model = ({ modelSrc }: ModelProps) => {
-    return (
-        <div style={{ height: '100%', width: '100%', position: 'absolute' }}>
-            <Canvas>
-                <ambientLight />
-                <pointLight position={[10, 10, 10]} />
-                <Box position={[-1.2, 0, 0]} />
-                <Box position={[1.2, 0, 0]} />
-            </Canvas>
-        </div>
-    );
-}
+const Model = ({ modelSrc, isTyanWalking }: ModelProps) => {
+    const { scene, animations } = useGLTF(modelSrc);
+    const { actions } = useAnimations(animations, scene);
+
+    useEffect(() => {
+        actions.walking?.[isTyanWalking ? 'play' : 'stop']();
+    }, [actions, isTyanWalking])
+
+    return <primitive position={new Vector3(0, -2, 0)} color={'hotpink'} name="Object_0" object={scene} />;
+};
 
 export default Model;
